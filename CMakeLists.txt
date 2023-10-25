@@ -86,19 +86,16 @@ target_include_directories(xsimd INTERFACE
     $<BUILD_INTERFACE:${XSIMD_INCLUDE_DIR}>
     $<INSTALL_INTERFACE:include>)
 
-if (ENABLE_XTL_COMPLEX)
-    target_compile_features(xsimd INTERFACE cxx_std_14)
-else()
-    target_compile_features(xsimd INTERFACE cxx_std_11)
-endif()
-
 OPTION(ENABLE_XTL_COMPLEX "enables support for xcomplex defined in xtl" OFF)
 OPTION(BUILD_TESTS "xsimd test suite" OFF)
 
 if(ENABLE_XTL_COMPLEX)
     find_package(xtl 0.7.0 REQUIRED)
+    target_compile_features(xsimd INTERFACE cxx_std_14)
     target_compile_definitions(xsimd INTERFACE XSIMD_ENABLE_XTL_COMPLEX=1)
     target_link_libraries(xsimd INTERFACE xtl)
+else()
+    target_compile_features(xsimd INTERFACE cxx_std_11)
 endif()
 
 if(BUILD_TESTS)
@@ -156,8 +153,6 @@ install(EXPORT ${PROJECT_NAME}-targets
         FILE ${PROJECT_NAME}Targets.cmake
         DESTINATION ${XSIMD_CMAKECONFIG_INSTALL_DIR})
 
-join_paths(libdir_for_pc_file "\${exec_prefix}" "${CMAKE_INSTALL_LIBDIR}")
-join_paths(includedir_for_pc_file "\${prefix}" "${CMAKE_INSTALL_INCLUDEDIR}")
 configure_file(${PROJECT_NAME}.pc.in
                "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc"
                 @ONLY)
